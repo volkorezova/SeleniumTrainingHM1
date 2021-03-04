@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 public class GeneralAction {
     public static WebDriver drv;
+    final String URL = "http://158.101.173.161/admin/";
+    final String USERNAME = "testadmin";
+    final String PASSWORD = "R8MRDAYT_test";
 
     @BeforeAll
     public static void start() {
@@ -20,14 +23,10 @@ public class GeneralAction {
         drv.quit();
     }
 
-    public boolean isElementPresent(WebDriver drv, By locator) {
-        return  drv.findElements(locator).size()>0;
-    }
-
     public void logInToAdminPanel(){
-        drv.get("http://158.101.173.161/admin/");
-        drv.findElement(By.cssSelector(".form-control[name=username]")).sendKeys("testadmin");
-        drv.findElement(By.cssSelector(".form-control[name=password]")).sendKeys("R8MRDAYT_test");
+        drv.get(URL);
+        drv.findElement(By.cssSelector(".form-control[name=username]")).sendKeys(USERNAME);
+        drv.findElement(By.cssSelector(".form-control[name=password]")).sendKeys(PASSWORD);
         drv.findElement(By.cssSelector(".btn.btn-default[name=login]")).click();
     }
 }

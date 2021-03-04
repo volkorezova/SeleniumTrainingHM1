@@ -1,100 +1,50 @@
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
+import java.util.List;
 
-public class PresenceTest extends GeneralAction{
+public class PresenceTest extends GeneralAction {
+    List<WebElement> fullMenuItems;
+    List<WebElement> separateSubMenuItem;
 
     @Test
-    void isAppearanceMenuPresent(){
+    void isAppearanceMenuPresent() {
         logInToAdminPanel();
+
+        //verify that we are logged in
         Assertions.assertTrue(drv.findElement(By.cssSelector(".center-block.img-responsive")).isDisplayed());
-        drv.findElement(By.xpath("//*[@id='box-apps-menu']/li[1]/a/span[2]")).click();
 
-        drv.findElement(By.cssSelector("#box-apps-menu > li.app.selected > ul > li.doc.selected > a > span")).click();
-        isElementPresent(drv,By.xpath("//div[text()[contains(.,'Template')]]"));
+        //get full menu items from DOM
+        fullMenuItems = drv.findElements(By.cssSelector("ul#box-apps-menu li.app"));
 
-        drv.findElement(By.cssSelector("#box-apps-menu > li.app.selected > ul > li.doc.selected > a > span")).click();
-        isElementPresent(drv,By.xpath("//div[text()[contains(.,'Logotype')]]"));
+        //move through each main item to subitems
+        for (int i = 0; i < fullMenuItems.size(); i++) {
+            fullMenuItems.get(i).click();
 
+            //get new menu items list after previous click on element
+            fullMenuItems = drv.findElements(By.cssSelector("ul#box-apps-menu li.app"));
 
+            //try to get submenus for each menu
+            try {
+                separateSubMenuItem = fullMenuItems.get(i).findElement(By.cssSelector(".docs")).findElements(By.cssSelector("li.doc"));
+                for (int j = 0; j < separateSubMenuItem.size(); j++) {
+                    //click on submenu item
+                    separateSubMenuItem.get(j).click();
 
+                    //get new menu items list after previous click on element
+                    fullMenuItems = drv.findElements(By.cssSelector("ul#box-apps-menu li.app"));
+
+                    //reload submenu items after each click
+                    separateSubMenuItem = fullMenuItems.get(i).findElement(By.cssSelector(".docs")).findElements(By.cssSelector("li.doc"));
+
+                    Assertions.assertTrue(drv.findElement(By.cssSelector("div.panel-heading")).isDisplayed());
+                }
+            } catch (NoSuchElementException e) {
+                //if menu item does not have sub menu items
+                Assertions.assertTrue(drv.findElement(By.cssSelector("div.panel-heading")).isDisplayed());
+            }
+        }
     }
-
-//    @Test
-//    void isCatalogMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isCountriesMenuPresent(){
-//
-//    }
-//    @Test
-//    void isCurrenciesMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isCustomersMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isGeoZonesMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isLangMenuPresent(){
-//    }
-//
-//    @Test
-//    void isModulesMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isOrdersMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isPagesMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isReportsMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isSettingsMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isSlidesMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isTaxMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isTranslationMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isUsersMenuPresent(){
-//
-//    }
-//
-//    @Test
-//    void isVQMenuPresent(){
-//
-//    }
 }
 
