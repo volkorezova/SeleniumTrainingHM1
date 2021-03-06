@@ -1,3 +1,5 @@
+package utils;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.By;
@@ -9,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class GeneralAction {
     public static WebDriver drv;
     final String URL = "http://158.101.173.161/admin/";
+    final String URL_MAIN = "http://158.101.173.161/";
     final String USERNAME = "testadmin";
     final String PASSWORD = "R8MRDAYT_test";
 
@@ -28,5 +31,25 @@ public class GeneralAction {
         drv.findElement(By.cssSelector(".form-control[name=username]")).sendKeys(USERNAME);
         drv.findElement(By.cssSelector(".form-control[name=password]")).sendKeys(PASSWORD);
         drv.findElement(By.cssSelector(".btn.btn-default[name=login]")).click();
+    }
+
+    public void openMainPage(){
+        drv.get(URL_MAIN);
+    }
+
+    public void openPopularProduct(){
+
+    }
+
+    public void addPopularProductToTheCart(){
+
+    }
+
+    public void openCart(){
+
+    }
+
+    public void removeProductFromCart(){
+
     }
 }
