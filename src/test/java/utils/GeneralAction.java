@@ -4,13 +4,24 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.JavascriptExecutor;
 
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class GeneralAction {
     public static WebDriver drv;
-    final String URL = "http://158.101.173.161/admin/";
+    public static WebDriverWait wait;
+    List<WebElement> allProductsInCart, allProducts;
+    JavascriptExecutor jse = (JavascriptExecutor) drv;
+
+    final String ADMIN_URL = "http://158.101.173.161/admin/";
     final String URL_MAIN = "http://158.101.173.161/";
     final String USERNAME = "testadmin";
     final String PASSWORD = "R8MRDAYT_test";
@@ -18,7 +29,7 @@ public class GeneralAction {
     @BeforeAll
     public static void start() {
         drv = new ChromeDriver();
-        drv.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        wait = new WebDriverWait(drv, 20);
     }
 
     @AfterAll
@@ -27,29 +38,68 @@ public class GeneralAction {
     }
 
     public void logInToAdminPanel(){
-        drv.get(URL);
+        drv.get(ADMIN_URL);
         drv.findElement(By.cssSelector(".form-control[name=username]")).sendKeys(USERNAME);
         drv.findElement(By.cssSelector(".form-control[name=password]")).sendKeys(PASSWORD);
         drv.findElement(By.cssSelector(".btn.btn-default[name=login]")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("box-apps-menu")));
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void openMainPage(){
         drv.get(URL_MAIN);
-    }
-
-    public void openPopularProduct(){
-
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='box-popular-products']")));
     }
 
     public void addPopularProductToTheCart(){
+        int counterOfProduct = 3;
+        do {
+            // Find and click on a random product
+            allProducts = drv.findElements(By.xpath("//*[@id='box-popular-products']/div/article"));
+            Random rand = new Random();
+            int randomProduct = rand.nextInt(allProducts.size());
 
+            //click on random popular product
+            allProducts.get(randomProduct).click();
+
+            //wait until button "Add to cart" is appeared
+            wait.until((ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(@name, 'add_cart_product')]"))));
+
+            //click on "Add to cart" button
+            jse.executeScript("arguments[0].click()", drv.findElement(By.xpath("//button[contains(@name, 'add_cart_product')]")));
+
+            //wait until badge of product quantity is displayed
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='cart']/a/div")));
+
+            openMainPage();
+            counterOfProduct--;
+        } while (counterOfProduct != 0);
     }
 
     public void openCart(){
-
+        drv.get("http://158.101.173.161/checkout");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='box-checkout-cart']/h2")));
     }
 
     public void removeProductFromCart(){
+        allProductsInCart = drv.findElements(By.xpath("//button[contains(@class,'btn-danger')]"));
+        for (int i = 0 ; i < allProductsInCart.size(); i++) {
+            drv.findElement(By.xpath("//button[contains(@class,'btn-danger')]")).click();
+            waitForLoad(drv);
+        }
+    }
 
+    public boolean isElementPresent(By element) {
+        return drv.findElements(element).size() > 0;
+    }
+
+    void waitForLoad(WebDriver driver) {
+        new WebDriverWait(driver, 30).until((ExpectedCondition<Boolean>) wd ->
+                ((JavascriptExecutor) wd).executeScript("return document.readyState").equals("complete"));
     }
 }
