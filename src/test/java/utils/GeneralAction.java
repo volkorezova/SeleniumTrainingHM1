@@ -13,12 +13,12 @@ import org.openqa.selenium.JavascriptExecutor;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class GeneralAction {
     public static WebDriver drv;
     public static WebDriverWait wait;
-    List<WebElement> allProductsInCart, allProducts;
+    List<WebElement> allProducts, allProductsItems;
+    WebElement allProductsInCart;
     JavascriptExecutor jse = (JavascriptExecutor) drv;
 
     final String ADMIN_URL = "http://158.101.173.161/admin/";
@@ -81,13 +81,15 @@ public class GeneralAction {
 
     public void openCart(){
         drv.get("http://158.101.173.161/checkout");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='box-checkout-cart']/h2")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("ul.items")));
     }
 
     public void removeProductFromCart() {
-        allProductsInCart = drv.findElements(By.xpath("//button[contains(@class,'btn-danger')]"));
-        for (int i = 0; i < allProductsInCart.size(); i++) {
-            drv.findElement(By.xpath("//button[contains(@class,'btn-danger')]")).click();
+        allProductsInCart = drv.findElement(By.xpath("//*[@id='box-checkout-cart']/ul"));
+        allProductsItems = allProductsInCart.findElements(By.cssSelector("li"));
+        for (int i = 1; i < allProductsItems.size(); i++) {
+            drv.findElements(By.cssSelector("li.item [name='remove_cart_item']")).get(i).click();
+            wait.until(ExpectedConditions.stalenessOf(allProductsInCart));
             waitForLoad(drv);
         }
     }
