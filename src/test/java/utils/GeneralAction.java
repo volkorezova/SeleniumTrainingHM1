@@ -17,6 +17,7 @@ import java.util.Random;
 public class GeneralAction {
     public static WebDriver drv;
     public static WebDriverWait wait;
+    public static By panelHeadingLocator = By.className("panel-heading");
     List<WebElement> allProducts, allProductsItems;
     WebElement allProductsInCart;
     JavascriptExecutor jse = (JavascriptExecutor) drv;
@@ -25,6 +26,8 @@ public class GeneralAction {
     final String URL_MAIN = "http://158.101.173.161/";
     final String USERNAME = "testadmin";
     final String PASSWORD = "R8MRDAYT_test";
+    final String COUNTRIES = ADMIN_URL + "?app=countries&doc=countries";
+
 
     @BeforeAll
     public static void start() {
@@ -82,6 +85,11 @@ public class GeneralAction {
     public void openCart(){
         drv.get("http://158.101.173.161/checkout");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("ul.items")));
+    }
+
+    public void openCountries(){
+        drv.get(COUNTRIES);
+        wait.until(ExpectedConditions.presenceOfElementLocated(panelHeadingLocator));
     }
 
     public void removeProductFromCart() {
