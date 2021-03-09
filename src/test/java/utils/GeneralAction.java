@@ -29,7 +29,7 @@ public class GeneralAction {
     @BeforeAll
     public static void start() {
         drv = new ChromeDriver();
-        wait = new WebDriverWait(drv, 20);
+        wait = new WebDriverWait(drv, 30);
     }
 
     @AfterAll
@@ -57,8 +57,8 @@ public class GeneralAction {
     }
 
     public void addPopularProductToTheCart(){
-        int counterOfProduct = 3;
-        do {
+
+        for (int counterOfProduct = 1; counterOfProduct < 4; counterOfProduct++){
             // Find and click on a random product
             allProducts = drv.findElements(By.xpath("//*[@id='box-popular-products']/div/article"));
             Random rand = new Random();
@@ -74,11 +74,9 @@ public class GeneralAction {
             jse.executeScript("arguments[0].click()", drv.findElement(By.xpath("//button[contains(@name, 'add_cart_product')]")));
 
             //wait until badge of product quantity is displayed
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='cart']/a/div")));
-
+            wait.until(ExpectedConditions.textToBePresentInElement(drv.findElement(By.cssSelector("div.badge.quantity")), String.valueOf(counterOfProduct)));
             openMainPage();
-            counterOfProduct--;
-        } while (counterOfProduct != 0);
+        }
     }
 
     public void openCart(){
@@ -86,9 +84,9 @@ public class GeneralAction {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='box-checkout-cart']/h2")));
     }
 
-    public void removeProductFromCart(){
+    public void removeProductFromCart() {
         allProductsInCart = drv.findElements(By.xpath("//button[contains(@class,'btn-danger')]"));
-        for (int i = 0 ; i < allProductsInCart.size(); i++) {
+        for (int i = 0; i < allProductsInCart.size(); i++) {
             drv.findElement(By.xpath("//button[contains(@class,'btn-danger')]")).click();
             waitForLoad(drv);
         }
