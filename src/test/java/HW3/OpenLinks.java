@@ -8,7 +8,7 @@ import utils.GeneralAction;
 
 import java.util.List;
 
-public class OpenLinks extends GeneralAction {
+public class OpenLinks extends GeneralActionsWithListener {
     String originalWindow;
     List<WebElement> externalLinksList;
 
@@ -17,16 +17,16 @@ public class OpenLinks extends GeneralAction {
         By externalLinks = By.cssSelector("i.fa.fa-external-link");
 
         logInToAdminPanel();
-        Assertions.assertTrue(drv.findElement(By.cssSelector(".center-block.img-responsive")).isDisplayed());
+        Assertions.assertTrue(edr.findElement(By.cssSelector(".center-block.img-responsive")).isDisplayed());
 
         openCountries();
         Assertions.assertTrue(isElementPresent(panelHeadingLocator), "Heading not found");
 
-        drv.findElement(By.xpath("//a[text()=' Add New Country']")).click();
+        edr.findElement(By.xpath("//a[text()=' Add New Country']")).click();
         Assertions.assertTrue(isElementPresent(panelHeadingLocator), "Heading not found");
 
-        originalWindow = drv.getWindowHandle();
-        externalLinksList = drv.findElements(externalLinks);
+        originalWindow = edr.getWindowHandle();
+        externalLinksList = edr.findElements(externalLinks);
 
         //open windows
         for (int i = 0; i < externalLinksList.size(); i++){
@@ -34,15 +34,15 @@ public class OpenLinks extends GeneralAction {
         }
 
         //close all tabs except first window (Countries)
-        for (String handl : drv.getWindowHandles()){
+        for (String handl : edr.getWindowHandles()){
             if (!handl.equals(originalWindow)) {
-                drv.switchTo().window(handl);
-                drv.close();
+                edr.switchTo().window(handl);
+                edr.close();
             }
         }
 
         //switch to the original window
-        drv.switchTo().window(originalWindow);
+        edr.switchTo().window(originalWindow);
         Assertions.assertTrue(isElementPresent(panelHeadingLocator), "Heading not found");
     }
 
